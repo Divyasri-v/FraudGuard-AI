@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./fraudguard.db
+      - JWT_SECRET=demo-secret-key-fraudguard-ai-academic-prototype-2026
+      - ACCESS_TOKEN_EXPIRE_MINUTES=480
+      - ML_RULE_WEIGHT=0.70
+      - ML_ANOMALY_WEIGHT=0.30
+      - MAX_CLAIMS=10000
+    volumes:
+      - backend-data:/app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
